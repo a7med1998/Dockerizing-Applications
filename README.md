@@ -43,8 +43,6 @@ This repository contains Dockerfiles for multiple programming languages with mul
 ## Contributions
 Contributions are welcome! If you have any improvements or additions, please open a Pull Request, and we will be happy to review it.
 
-## License
-This project is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgments
 Thank you to everyone who contributed to this project. If you have any questions or need assistance, feel free to reach out to us.
