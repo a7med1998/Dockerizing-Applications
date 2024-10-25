@@ -19,25 +19,25 @@ This repository contains Dockerfiles for multiple programming languages with mul
 ### PHP
 1. Build the Docker image for PHP using the provided Dockerfile.
    sh
-   docker build -t my-php-app -f Dockerfile.php .
+  ` docker build -t my-php-app -f Dockerfile.php `
    
 
 ### Java
 1. Build the Docker image for Java using the provided Dockerfile.
    sh
-   docker build -t my-java-app -f Dockerfile.java .
+  ` docker build -t my-java-app -f Dockerfile.java `
    
 
 ### JavaScript
 1. Build the Docker image for JavaScript using the provided Dockerfile.
    sh
-   docker build -t my-js-app -f Dockerfile.js .
+  ` docker build -t my-js-app -f Dockerfile.js `
    
 
 ### .NET
 1. Build the Docker image for .NET using the provided Dockerfile.
    sh
-   docker build -t my-dotnet-app -f Dockerfile.dotnet .
+  ` docker build -t my-dotnet-app -f Dockerfile.dotnet `
    
 
 ## Contributions
