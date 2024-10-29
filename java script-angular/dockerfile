@@ -1,0 +1,38 @@
+# Stage 1: Build the Angular application
+FROM node:18 AS build
+# Explanation: We start with the Node.js image (version 18) as the base for the build stage.
+# This image includes everything needed to compile Angular applications.
+
+WORKDIR /app
+# Explanation: Set the working directory inside the container to "/app" where the application files will be stored.
+
+COPY package.json package-lock.json ./
+# Explanation: Copy the package.json and package-lock.json files into the container.
+# This ensures that the dependencies are installed correctly based on the specified versions.
+
+RUN npm install
+# Explanation: This command installs the application dependencies listed in package.json.
+
+COPY . .
+# Explanation: Copy all remaining files from the project directory to the container.
+# This includes the source code, configuration files, and any other necessary resources.
+
+RUN npm run build -- --prod
+# Explanation: This command builds the Angular application in production mode.
+# The output will be generated in the 'dist' directory.
+
+
+# Stage 2: Serve the Angular application
+FROM nginx:alpine AS production
+# Explanation: In the second stage, we use the Nginx image based on Alpine Linux for serving the built Angular application.
+# This creates a lightweight image for production.
+
+COPY --from=build /app/dist/your-app-name /usr/share/nginx/html
+# Explanation: Copy the built application files from the build stage to the Nginx directory.
+# Replace `your-app-name` with the actual name of your Angular application's output folder in the 'dist' directory.
+
+EXPOSE 80
+# Explanation: Expose port 80 in the container, which is the default port for HTTP traffic.
+
+CMD ["nginx", "-g", "daemon off;"]
+# Explanation: Start Nginx in the foreground to serve the application.
