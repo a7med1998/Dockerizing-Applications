@@ -19,7 +19,6 @@ COPY . .
 RUN dotnet publish -c Release -o /app/publish
 # Explanation: Build the application in Release mode and output the published files to "/app/publish".
 
----
 
 # Stage 2: Run the .NET application
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
