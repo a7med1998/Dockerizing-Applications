@@ -1,0 +1,45 @@
+# Stage 1: Build stage for Django application
+FROM python:3.10 AS build  
+# Using Python 3.10 as the base image for the build stage
+
+# Setting the working directory
+WORKDIR /app  
+# Setting the working directory inside the container to /app
+
+# Copying requirements.txt
+COPY requirements.txt ./  
+# Copying requirements.txt to install dependencies
+
+# Installing dependencies
+RUN pip install --no-cache-dir -r requirements.txt  
+# Installing Python dependencies without cache
+
+# Copying the application files
+COPY . .  
+# Copying the rest of the application files into the working directory
+
+# Running database migrations
+RUN python manage.py migrate  
+# Running Django migrations to set up the database schema
+
+# Stage 2: Production stage
+FROM python:3.10-slim  
+# Using a smaller Python image for the production stage
+
+# Setting the working directory
+WORKDIR /app  
+# Setting the working directory inside the container to /app
+
+# Copying the installed packages and application files from the build stage
+COPY --from=build /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages  
+# Copying installed packages
+COPY --from=build /app /app  
+# Copying the application files to the final image
+
+# Exposing port 8000 for the Django application
+EXPOSE 8000  
+# Exposing port 8000 to allow web traffic
+
+# Default command to run the Django application
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]  
+# Starting the Django development server
