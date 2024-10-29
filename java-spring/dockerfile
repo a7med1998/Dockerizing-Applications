@@ -1,0 +1,34 @@
+# Stage 1: Build the application
+FROM maven:3.8.6-openjdk-17 AS build
+# Explanation: We use the official Maven image with JDK 17 as the build stage.
+# Maven will be used to compile and package the application.
+
+WORKDIR /app
+# Explanation: Set the working directory to /app in the container to organize files.
+
+COPY pom.xml ./
+COPY src ./src
+# Explanation: Copy the Maven configuration file (pom.xml) and the source code directory (src) into the container.
+# This allows Maven to build the application with all dependencies.
+
+RUN mvn clean package -DskipTests
+# Explanation: Use Maven to clean previous builds and package the application, skipping tests for faster builds.
+# This will generate a JAR file in the target directory.
+
+# Stage 2: Run the application
+FROM openjdk:17-jdk-alpine
+# Explanation: Use a lighter JDK Alpine image for running the application to keep the final image size small.
+
+WORKDIR /app
+# Explanation: Set the working directory to /app in the new stage.
+
+COPY --from=build /app/target/myapp.jar /app/myapp.jar
+# Explanation: Copy the packaged JAR file from the build stage into this stage.
+# This approach keeps only the final artifact and removes build dependencies.
+
+EXPOSE 8080
+# Explanation: Expose port 8080, where the Spring Boot application will be accessible.
+
+CMD ["java", "-jar", "/app/myapp.jar"]
+# Explanation: Define the command to run the application.
+# This uses "java -jar" to execute the JAR file located in /app.
