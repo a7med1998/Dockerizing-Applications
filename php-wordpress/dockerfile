@@ -1,0 +1,48 @@
+# Stage 1: Build stage for PHP with WordPress
+FROM php:8.1-apache AS build  
+# Using PHP 8.1 with Apache as the base image for the build stage
+
+# Setting the working directory
+WORKDIR /var/www/html  
+# Setting the working directory to /var/www/html where WordPress will be installed
+
+# Installing required system dependencies and PHP extensions for WordPress
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    unzip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_mysql zip
+
+# Downloading and extracting WordPress
+RUN curl -o wordpress.tar.gz https://wordpress.org/latest.tar.gz && \
+    tar -xzf wordpress.tar.gz --strip-components=1 && \
+    rm wordpress.tar.gz  
+    # Downloading and extracting WordPress into the working directory
+
+# Copying configuration file
+COPY wp-config.php .  
+# Copying a custom WordPress configuration file into the working directory
+
+# Stage 2: Production stage
+FROM php:8.1-apache  
+# Using PHP 8.1 with Apache for the final production image
+
+# Copying the application files from the build stage
+COPY --from=build /var/www/html /var/www/html  
+# Copying WordPress files from the build stage
+
+# Setting permissions for WordPress files
+RUN chown -R www-data:www-data /var/www/html  
+# Setting ownership to the www-data user for the web server
+RUN chmod -R 755 /var/www/html  
+# Setting appropriate permissions for the WordPress files
+
+# Exposing port 80 for the web server
+EXPOSE 80  
+# Exposing port 80 to allow web traffic
+
+# Default command to run Apache in the foreground
+CMD ["apache2-foreground"]  # Starting Apache in the foreground to keep the container running
