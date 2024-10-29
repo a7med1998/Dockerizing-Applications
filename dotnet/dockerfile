@@ -1,0 +1,39 @@
+# Stage 1: Build the .NET application
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+# Explanation: We start with the .NET SDK (version 7.0) image as the base for the build stage.
+# This image includes everything needed to compile and publish .NET code.
+
+WORKDIR /src
+# Explanation: Set the working directory to "/src" for the build stage to keep files organized.
+
+COPY *.csproj ./
+# Explanation: Copy the project file (e.g., .csproj) to the container so we can restore dependencies.
+# This helps optimize layer caching, as dependencies will only be restored if the project file changes.
+
+RUN dotnet restore
+# Explanation: Restore any dependencies specified in the project file to prepare for the build.
+
+COPY . .
+# Explanation: Copy the remaining application files from the project directory to the container.
+
+RUN dotnet publish -c Release -o /app/publish
+# Explanation: Build the application in Release mode and output the published files to "/app/publish".
+
+
+# Stage 2: Run the .NET application
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
+# Explanation: Use a lightweight .NET runtime image for running the application, making the final image smaller.
+
+WORKDIR /app
+# Explanation: Set the working directory to "/app" in the runtime container for the published files.
+
+COPY --from=build /app/publish .
+# Explanation: Copy the published files from the build stage to the runtime stage.
+# This step brings only the necessary files needed to run the application, excluding the build tools.
+
+EXPOSE 80
+# Explanation: Expose port 80 for HTTP access to the application.
+
+ENTRYPOINT ["dotnet", "YourApp.dll"]
+# Explanation: Define the entrypoint to start the application by running the specified DLL file.
+# Replace "YourApp.dll" with the actual name of your application's DLL file.
